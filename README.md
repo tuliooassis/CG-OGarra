@@ -1,2 +1,4 @@
-# CG-OGarra
-TP2 desenvolvido na matéria de Computação Gráfica
+# CG - Trabalho Prático 02
+#### O Garra
+
+ Desenvolvido por: **Túlio Assis** && **Arthur Abellice**
