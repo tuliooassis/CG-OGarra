@@ -1,6 +1,9 @@
 struct posicao {
-    float fundo;
-    float frente;
-    float 
+    float zFundo;
+    float zFrente;
+    float yAltura;
+    float xInicio;
+    float xFim;
+};
 
-}
+void initSkybox (struct posicao *posicao);

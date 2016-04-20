@@ -18,6 +18,7 @@
 
 using namespace std;
 
+struct posicao posicaoSkybox;
 
 bool movimento = true;
 
@@ -64,6 +65,17 @@ static void atoa(void){
     glutPostRedisplay();
 }
 
+void init (){
+    //Instancia variáveis do skybox
+    posicaoSkybox.zFundo = -10.0;
+    posicaoSkybox.zFrente = -1.0;
+    posicaoSkybox.yAltura = 5.0;
+    posicaoSkybox.xInicio = -2.0;
+    posicaoSkybox.xFim = 2.0;
+
+    initSkybox(&posicaoSkybox);
+
+}
 void redimensionar (int width, int height){
 
     glViewport(0, 0, width, height);
@@ -87,7 +99,7 @@ int main(int argc, char *argv[]){
     glutDisplayFunc(desenhar);
     glutKeyboardFunc(teclado);
     glutIdleFunc(atoa);
-
+    init();
     glClearColor(0,0,0,1);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
