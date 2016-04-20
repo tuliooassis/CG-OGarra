@@ -1,0 +1,50 @@
+# depslib dependency file v1.0
+1460599269 source:/home/tulio/Área de Trabalho/TP02/main.cpp
+	"bibliotecas_linux.h"
+	"bibliotecas_windows.h"
+
+1460599503 /home/tulio/Área de Trabalho/TP02/bibliotecas_linux.h
+	<GL/glew.h>
+	<GL/freeglut.h>
+	<SOIL/SOIL.h>
+	<iostream>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<SFML/Audio.hpp>
+
+1460599503 /home/tulio/Área de Trabalho/TP02/bibliotecas_windows.h
+	<SOIL.h>
+	<GL/glew.h>
+	<GL/freeglut.h>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<iostream>
+	<SFML/Audio.hpp>
+	<windows.h>
+
+1460599269 source:/home/tulio/Área de Trabalho/TP02-CG/main.cpp
+	"bibliotecas_linux.h"
+	"bibliotecas_windows.h"
+
+1460599511 /home/tulio/Área de Trabalho/TP02-CG/bibliotecas_linux.h
+	<GL/glew.h>
+	<GL/freeglut.h>
+	<SOIL/SOIL.h>
+	<iostream>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<SFML/Audio.hpp>
+
+1460599508 /home/tulio/Área de Trabalho/TP02-CG/bibliotecas_windows.h
+	<SOIL.h>
+	<GL/glew.h>
+	<GL/freeglut.h>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<iostream>
+	<SFML/Audio.hpp>
+
