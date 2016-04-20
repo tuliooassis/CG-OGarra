@@ -1,9 +1,11 @@
 struct posicao {
     float zFundo;
     float zFrente;
-    float yAltura;
+    float yCima;
+    float yBaixo;
     float xInicio;
     float xFim;
 };
 
-void initSkybox (struct posicao *posicao);
+void drawSkyboxMachine (struct posicao *posicao);
+void drawSkyboxWorld (struct posicao *posicao);

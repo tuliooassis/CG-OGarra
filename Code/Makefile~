@@ -1,5 +1,5 @@
 CC = g++
-OPCOES_COMPILADOR= -lglut -lGLU -lGLEW -lSOIL -lGL
+OPCOES_COMPILADOR= -lglut -lGLU -lGLEW -lGL -lSOIL -lGL -lm
 TODOS_ARQUIVOS_PONTOH = skybox.h
 TODOS_ARQUIVOS_OBJ = main.o skybox.o
 

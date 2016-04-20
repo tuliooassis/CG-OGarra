@@ -6,58 +6,38 @@
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <iostream>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
-
 
 #include "skybox.h"
 
-
 using namespace std;
 
-struct posicao posicaoSkybox;
+struct posicao posicaoSkyboxMachine;
+struct posicao posicaoSkyboxWorld;
 
-bool movimento = true;
-
-
-void desenhar(){
+void desenha (){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glColor4f(1, 1, 1, 1);
+    drawSkyboxWorld(&posicaoSkyboxWorld);
+    drawSkyboxMachine(&posicaoSkyboxMachine);
 
-    glPushMatrix();
-        glTranslated(0, 0, -3);
-        // glRotated(0,0,0,1);
-        glutSolidCube(1);
-    glPopMatrix();
 
     glutSwapBuffers();
 }
 
-
-static void teclado(unsigned char key, int x, int y){
+void teclado (unsigned char key, int x, int y){
     switch (key){
         case 27 :     // Tecla 'ESC
             exit(0);
             break;
         case ' ':
-            if (movimento){
-                glLoadIdentity();
-                gluLookAt(20, 0, 0, 0, 0, -3, 0, 1, 0);
-                movimento = false;
-            }
+            glLoadIdentity();
+            gluLookAt(5, 1, 0, 0, 0, posicaoSkyboxMachine.zFundo, 0, 1, 0);
             break;
         case 'a':
-            if (!movimento){
-                glLoadIdentity();
-                gluLookAt(-20, 0, 0, 0, 0, -3, 0, 1, 0);
-                movimento = true;
-            }
+            glLoadIdentity();
+            gluLookAt(-5, 1, 0, 0, 0, posicaoSkyboxMachine.zFundo, 0, 1, 0);
             break;
     }
-
     glutPostRedisplay();
 }
 
@@ -66,17 +46,24 @@ static void atoa(void){
 }
 
 void init (){
-    //Instancia variáveis do skybox
-    posicaoSkybox.zFundo = -10.0;
-    posicaoSkybox.zFrente = -1.0;
-    posicaoSkybox.yAltura = 5.0;
-    posicaoSkybox.xInicio = -2.0;
-    posicaoSkybox.xFim = 2.0;
+    //Instancia variáveis do skybox da maquina
+    posicaoSkyboxMachine.zFundo = -15.0;
+    posicaoSkyboxMachine.zFrente = -10.0;
+    posicaoSkyboxMachine.yCima = 3.0;
+    posicaoSkyboxMachine.yBaixo = -3.0;
+    posicaoSkyboxMachine.xInicio = -2.5;
+    posicaoSkyboxMachine.xFim = 2.5;
 
-    initSkybox(&posicaoSkybox);
-
+    //Instancia variáveis doskybox do mundo
+    posicaoSkyboxWorld.zFundo = -20.0;
+    posicaoSkyboxWorld.zFrente = -1.0;
+    posicaoSkyboxWorld.yCima = 5.0;
+    posicaoSkyboxWorld.yBaixo = -5.0;
+    posicaoSkyboxWorld.xInicio = -5.0;
+    posicaoSkyboxWorld.xFim = 5.0;
 }
-void redimensionar (int width, int height){
+
+void redimensiona (int width, int height){
 
     glViewport(0, 0, width, height);
     float razaoAspecto = (float) glutGet(GLUT_WINDOW_WIDTH) / (float) glutGet(GLUT_WINDOW_HEIGHT);
@@ -95,8 +82,8 @@ int main(int argc, char *argv[]){
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
     glutCreateWindow("O Garra!");
-    glutReshapeFunc(redimensionar);
-    glutDisplayFunc(desenhar);
+    glutReshapeFunc(redimensiona);
+    glutDisplayFunc(desenha);
     glutKeyboardFunc(teclado);
     glutIdleFunc(atoa);
     init();
