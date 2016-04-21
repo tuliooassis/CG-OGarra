@@ -14,6 +14,11 @@
 #include "garra.h"
 using namespace std;
 
+struct ponto {
+    float x, y, z;
+};
+
+struct ponto objects[5];
 struct posicao posicaoSkyboxMachine;
 struct posicao posicaoSkyboxWorld;
 struct garra posicaoGarra;
@@ -34,6 +39,13 @@ void desenha (){
     drawSkyboxWorld(&posicaoSkyboxWorld, texturaSkyboxWorld);
     drawSkyboxMachine(&posicaoSkyboxMachine);
 
+    for (int i = 0; i < 5; i ++){
+        glPushMatrix();
+            glColor4f((float)rand()/(float)(RAND_MAX), (float)rand()/(float)(RAND_MAX), (float)rand()/(float)(RAND_MAX), 1.0);
+            glTranslatef(objects[i].x, objects[i].y, objects[i].z);
+            glutSolidSphere(0.5, 100, 100);
+        glPopMatrix();
+    }
 
     glutSwapBuffers();
 }
@@ -74,8 +86,27 @@ static void atualizaCena(int idx){
     glutPostRedisplay();
 }
 
+bool verifyCollision (struct ponto objects, int numberObject, int amount){
+    for (int i = 0; i < amount; i++){
+        ///fazer
+    }
+}
 
 void init (){
+    srand(time(0));
+    for (int i = 0; i < 5; i++){
+        do {
+            objects[i].z = -50 + rand()%50;
+        } while (objects[i].z > -6 || objects[i].z < -12);
+
+        do {
+            objects[i].x = -50 + rand()%50;
+        } while (objects[i].x > -6 || objects[i].x < -12);
+
+        do {
+            objects[i].y = -50 + rand()%50;
+        } while (objects[i].y > -6 || objects[i].y < -12);
+    }
     //Instancia variáveis do skybox da maquina
     posicaoSkyboxMachine.zFundo = -12.0;
     posicaoSkyboxMachine.zFrente = -6.0;
@@ -95,7 +126,7 @@ void init (){
     //Instancia variáveis garra
     posicaoGarra.x = 0.0;
     posicaoGarra.y = 0.0;
-    posicaoGarra.z = -5.0;
+    posicaoGarra.z = -9.0;
 
 
     texturaSkyboxWorld[top] = SOIL_load_OGL_texture(
