@@ -7,6 +7,9 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
+#include <math.h>
+#include <iostream>
+
 #include "skybox.h"
 #include "garra.h"
 using namespace std;
@@ -14,13 +17,15 @@ using namespace std;
 struct posicao posicaoSkyboxMachine;
 struct posicao posicaoSkyboxWorld;
 struct garra m;
-double angle = 0;
+double angle = -.8;
 double anguloOmbro = 0;
 double anguloCutuvelo = 0;
 
 void desenha (){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glColor4f(1, 1, 1, 1);
+    glLoadIdentity();
+    gluLookAt(5*sin(angle) + 5*cos(angle), 1, 5*cos(angle) - 5*sin(angle), 0, 0, m.z, 0, 1, 0);
     drawGarra (&m, &anguloOmbro, &anguloCutuvelo);
     drawSkyboxWorld(&posicaoSkyboxWorld);
     //drawSkyboxMachine(&posicaoSkyboxMachine, angle);
@@ -35,10 +40,14 @@ void teclado (unsigned char key, int x, int y){
             exit(0);
             break;
         case ' ':
-            angle+=0.2;
+            if (angle >= -1.8)
+                angle -= .2;
+            //cout << angle << endl;
             break;
         case 'a':
-            angle-=0.2;
+            if (angle <= .4)
+                angle += .2;
+            //cout << angle << endl;
             break;
         case 'O':
             anguloOmbro++;
@@ -71,11 +80,11 @@ void init (){
 
     //Instancia variáveis doskybox do mundo
     posicaoSkyboxWorld.zFundo = -20.0;
-    posicaoSkyboxWorld.zFrente = -1.0;
+    posicaoSkyboxWorld.zFrente = 0.0;
     posicaoSkyboxWorld.yCima = 5.0;
     posicaoSkyboxWorld.yBaixo = -5.0;
-    posicaoSkyboxWorld.xInicio = -5.0;
-    posicaoSkyboxWorld.xFim = 5.0;
+    posicaoSkyboxWorld.xInicio = -7.0;
+    posicaoSkyboxWorld.xFim = 7.0;
 
     //Instancia variáveis garra
     m.x = 0.0;

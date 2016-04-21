@@ -12,10 +12,9 @@
 
 #include "skybox.h"
 
-void drawSkyboxMachine (struct posicao *posicao, double angle){
+void drawSkyboxMachine (struct posicao *posicao){
 
     glPushMatrix();
-        gluLookAt(1*sin(angle) - 1*cos(angle), 1,  1*cos(angle) - 1*sin(angle), 0, 0, (*posicao).zFundo, 0, 1, 0);
 
         glColor4f(1.0, 1.0, 1.0, 1.0);
         glBegin(GL_QUADS);			// Face posterior
