@@ -77,10 +77,10 @@ static void atualizaCena(int idx){
 
 void init (){
     //Instancia variáveis do skybox da maquina
-    posicaoSkyboxMachine.zFundo = -8.0;
-    posicaoSkyboxMachine.zFrente = -2.0;
+    posicaoSkyboxMachine.zFundo = -12.0;
+    posicaoSkyboxMachine.zFrente = -6.0;
     posicaoSkyboxMachine.yCima = 3.0;
-    posicaoSkyboxMachine.yBaixo = -5;
+    posicaoSkyboxMachine.yBaixo = -4.5;
     posicaoSkyboxMachine.xInicio = -3;
     posicaoSkyboxMachine.xFim = 3;
 
@@ -104,6 +104,18 @@ void init (){
         SOIL_CREATE_NEW_ID,
 		SOIL_FLAG_INVERT_Y
 	);
+    texturaSkyboxWorld[1] = SOIL_load_OGL_texture(
+        "./img/floor.png",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_INVERT_Y
+    );
+    texturaSkyboxWorld[2] = SOIL_load_OGL_texture(
+        "./img/arcade.jpg",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_INVERT_Y
+    );
 }
 
 void redimensiona (int width, int height){
