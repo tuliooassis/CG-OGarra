@@ -8,17 +8,22 @@
 #include <GL/freeglut.h>
 
 #include "skybox.h"
-
+#include "garra.h"
 using namespace std;
 
 struct posicao posicaoSkyboxMachine;
 struct posicao posicaoSkyboxWorld;
+struct garra m;
+double angle = 0;
+double anguloOmbro = 0;
+double anguloCutuvelo = 0;
 
 void desenha (){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glColor4f(1, 1, 1, 1);
+    drawGarra (&m, &anguloOmbro, &anguloCutuvelo);
     drawSkyboxWorld(&posicaoSkyboxWorld);
-    drawSkyboxMachine(&posicaoSkyboxMachine);
+    //drawSkyboxMachine(&posicaoSkyboxMachine, angle);
 
 
     glutSwapBuffers();
@@ -30,12 +35,22 @@ void teclado (unsigned char key, int x, int y){
             exit(0);
             break;
         case ' ':
-            glLoadIdentity();
-            gluLookAt(5, 1, 0, 0, 0, posicaoSkyboxMachine.zFundo, 0, 1, 0);
+            angle+=0.2;
             break;
         case 'a':
-            glLoadIdentity();
-            gluLookAt(-5, 1, 0, 0, 0, posicaoSkyboxMachine.zFundo, 0, 1, 0);
+            angle-=0.2;
+            break;
+        case 'O':
+            anguloOmbro++;
+            break;
+        case 'o':
+            anguloOmbro--;
+            break;
+        case 'C':
+            anguloCutuvelo++;
+            break;
+        case 'c':
+            anguloCutuvelo--;
             break;
     }
     glutPostRedisplay();
@@ -61,6 +76,11 @@ void init (){
     posicaoSkyboxWorld.yBaixo = -5.0;
     posicaoSkyboxWorld.xInicio = -5.0;
     posicaoSkyboxWorld.xFim = 5.0;
+
+    //Instancia variáveis garra
+    m.x = 0.0;
+    m.y = 0.0;
+    m.z = -5.0;
 }
 
 void redimensiona (int width, int height){
@@ -69,7 +89,7 @@ void redimensiona (int width, int height){
     float razaoAspecto = (float) glutGet(GLUT_WINDOW_WIDTH) / (float) glutGet(GLUT_WINDOW_HEIGHT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(50.0f, razaoAspecto, 1.0, 20.0);
+    gluPerspective(50.0f, razaoAspecto, 1.0, 50.0);
     //glFrustum(-razaoAspecto, razaoAspecto, -1.0, 1.0, 2.0, 100.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity() ;
@@ -77,7 +97,7 @@ void redimensiona (int width, int height){
 
 int main(int argc, char *argv[]){
     glutInit(&argc, argv);
-    glutInitWindowSize(600,600);
+    glutInitWindowSize(1000,700);
     glutInitWindowPosition(10,10);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 

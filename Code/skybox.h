@@ -7,5 +7,5 @@ struct posicao {
     float xFim;
 };
 
-void drawSkyboxMachine (struct posicao *posicao);
+void drawSkyboxMachine (struct posicao *posicao, double angle);
 void drawSkyboxWorld (struct posicao *posicao);

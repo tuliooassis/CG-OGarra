@@ -8,11 +8,15 @@
 #include <GL/freeglut.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "skybox.h"
 
-void drawSkyboxMachine (struct posicao *posicao){
+void drawSkyboxMachine (struct posicao *posicao, double angle){
+
     glPushMatrix();
+        gluLookAt(1*sin(angle) - 1*cos(angle), 1,  1*cos(angle) - 1*sin(angle), 0, 0, (*posicao).zFundo, 0, 1, 0);
+
         glColor4f(1.0, 1.0, 1.0, 1.0);
         glBegin(GL_QUADS);			// Face posterior
     		glNormal3f(0.0, 0.0, 1.0);	// Normal da face

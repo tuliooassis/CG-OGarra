@@ -1,7 +1,7 @@
 CC = g++
 OPCOES_COMPILADOR= -lglut -lGLU -lGLEW -lSOIL -lGL
-TODOS_ARQUIVOS_PONTOH = skybox.h
-TODOS_ARQUIVOS_OBJ = main.o skybox.o
+TODOS_ARQUIVOS_PONTOH = skybox.h garra.h
+TODOS_ARQUIVOS_OBJ = main.o skybox.o garra.o
 
 %.o: ../%.c $(TODOS_ARQUIVOS_PONTOH)
 	$(CC) -o $@ -c $< $(OPCOES_COMPILADOR)
@@ -9,7 +9,7 @@ TODOS_ARQUIVOS_OBJ = main.o skybox.o
 all: $(TODOS_ARQUIVOS_OBJ)
 	$(CC) -o main $^ $(OPCOES_COMPILADOR)
 
-run:  all
+run: all
 	./main
 
 install:
@@ -20,5 +20,4 @@ install:
 	sudo apt-get install libsfml-dev
 
 clean:
-	# Arquivos Apagados!
 	rm *.o main
