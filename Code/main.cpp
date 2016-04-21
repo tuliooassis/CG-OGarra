@@ -16,19 +16,23 @@ using namespace std;
 
 struct posicao posicaoSkyboxMachine;
 struct posicao posicaoSkyboxWorld;
-struct garra m;
+struct garra posicaoGarra;
 double angle = -.8;
 double anguloOmbro = 0;
 double anguloCutuvelo = 0;
+
+enum { top = 0 };
+GLint texturaSkyboxWorld[6];
 
 void desenha (){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glColor4f(1, 1, 1, 1);
     glLoadIdentity();
-    gluLookAt(5*sin(angle) + 5*cos(angle), 1, 5*cos(angle) - 5*sin(angle), 0, 0, m.z, 0, 1, 0);
-    drawGarra (&m, &anguloOmbro, &anguloCutuvelo);
-    drawSkyboxWorld(&posicaoSkyboxWorld);
-    //drawSkyboxMachine(&posicaoSkyboxMachine, angle);
+    gluLookAt(5*sin(angle) + 5*cos(angle), 1, 5*cos(angle) - 5*sin(angle), 0, 0, posicaoGarra.z, 0, 1, 0);
+
+    drawGarra (&posicaoGarra, &anguloOmbro, &anguloCutuvelo);
+    drawSkyboxWorld(&posicaoSkyboxWorld, texturaSkyboxWorld);
+    drawSkyboxMachine(&posicaoSkyboxMachine);
 
 
     glutSwapBuffers();
@@ -40,7 +44,7 @@ void teclado (unsigned char key, int x, int y){
             exit(0);
             break;
         case ' ':
-            if (angle >= -1.8)
+            if (angle >= -2)
                 angle -= .2;
             //cout << angle << endl;
             break;
@@ -65,18 +69,20 @@ void teclado (unsigned char key, int x, int y){
     glutPostRedisplay();
 }
 
-static void atoa(void){
+static void atualizaCena(int idx){
+    glutTimerFunc(33, atualizaCena, 0);
     glutPostRedisplay();
 }
 
+
 void init (){
     //Instancia variáveis do skybox da maquina
-    posicaoSkyboxMachine.zFundo = -15.0;
-    posicaoSkyboxMachine.zFrente = -10.0;
+    posicaoSkyboxMachine.zFundo = -8.0;
+    posicaoSkyboxMachine.zFrente = -2.0;
     posicaoSkyboxMachine.yCima = 3.0;
-    posicaoSkyboxMachine.yBaixo = -3.0;
-    posicaoSkyboxMachine.xInicio = -2.5;
-    posicaoSkyboxMachine.xFim = 2.5;
+    posicaoSkyboxMachine.yBaixo = -5;
+    posicaoSkyboxMachine.xInicio = -3;
+    posicaoSkyboxMachine.xFim = 3;
 
     //Instancia variáveis doskybox do mundo
     posicaoSkyboxWorld.zFundo = -20.0;
@@ -87,9 +93,17 @@ void init (){
     posicaoSkyboxWorld.xFim = 7.0;
 
     //Instancia variáveis garra
-    m.x = 0.0;
-    m.y = 0.0;
-    m.z = -5.0;
+    posicaoGarra.x = 0.0;
+    posicaoGarra.y = 0.0;
+    posicaoGarra.z = -5.0;
+
+
+    texturaSkyboxWorld[top] = SOIL_load_OGL_texture(
+        "./img/ceil.jpeg",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_INVERT_Y
+	);
 }
 
 void redimensiona (int width, int height){
@@ -111,17 +125,20 @@ int main(int argc, char *argv[]){
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 
     glutCreateWindow("O Garra!");
+    init();
     glutReshapeFunc(redimensiona);
     glutDisplayFunc(desenha);
     glutKeyboardFunc(teclado);
-    glutIdleFunc(atoa);
-    init();
+    glutTimerFunc(0, atualizaCena, 0);
     glClearColor(0,0,0,1);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     glutMainLoop();
 

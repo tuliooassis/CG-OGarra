@@ -6,9 +6,10 @@
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <string.h>
-#include <stdlib.h>
+
 #include <math.h>
+#include <iostream>
+using namespace std;
 
 #include "skybox.h"
 
@@ -25,13 +26,13 @@ void drawSkyboxMachine (struct posicao *posicao){
     		glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFundo);
     	glEnd();
 
-        //
+        // glColor4f(1.0, 1.0, 1.0, 0.2); // Espelho ***** dando errim
     	// glBegin(GL_QUADS);			// Face frontal
     	// 	glNormal3f(0.0, 0.0, -1.0); 	// Normal da face
-    	// 	glVertex3f(40.0, 40.0, -40.0);
-    	// 	glVertex3f(40.0, -40.0, -40.0);
-    	// 	glVertex3f(-40.0, -40.0, -40.0);
-    	// 	glVertex3f(-40.0, 40.0, -40.0);
+    	// 	glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFrente);
+    	// 	glVertex3f((*posicao).xInicio, (*posicao).yBaixo, (*posicao).zFrente);
+    	// 	glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFrente);
+    	// 	glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFrente);
     	// glEnd();
 
         glColor4f(1.0, 0.0, 0.0, 1.0);
@@ -73,7 +74,7 @@ void drawSkyboxMachine (struct posicao *posicao){
 }
 
 
-void drawSkyboxWorld (struct posicao *posicao){ // Colocar texturas do mundo
+void drawSkyboxWorld (struct posicao *posicao, GLint texturaSkyboxWorld[]){ // Colocar texturas do mundo
     glPushMatrix();
         glColor4f(1.0, 1.0, 1.0, 1.0);
         glBegin(GL_QUADS);			// Face posterior
@@ -112,13 +113,17 @@ void drawSkyboxWorld (struct posicao *posicao){ // Colocar texturas do mundo
     	glEnd();
 
         glColor4f(0.0, 0.0, 1.0, 1.0);
-    	glBegin(GL_QUADS);			// Face superior
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, texturaSkyboxWorld[0]);
+
+        glBegin(GL_QUADS);			// Face superior
     		glNormal3f(0.0, 1.0, 0.0);  	// Normal da face
-    		glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFrente);
-    		glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFundo);
-    		glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFundo);
-    		glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFrente);
+    		glTexCoord2f(1, 0); glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFrente);
+    		glTexCoord2f(1, 1); glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFundo);
+    		glTexCoord2f(0, 1); glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFundo);
+    		glTexCoord2f(0, 0); glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFrente);
     	glEnd();
+        glDisable(GL_TEXTURE_2D);
 
         glColor4f(1.0, 1.0, 1.0, 1.0);
     	glBegin(GL_QUADS);			// Face inferior

@@ -8,4 +8,4 @@ struct posicao {
 };
 
 void drawSkyboxMachine (struct posicao *posicao);
-void drawSkyboxWorld (struct posicao *posicao);
+void drawSkyboxWorld (struct posicao *posicao, GLint texturaSkyboxWorld[]);

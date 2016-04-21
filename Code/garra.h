@@ -3,4 +3,4 @@ struct garra {
     float angle;
 };
 
-void drawGarra (struct garra *m, double *anguloOmbro, double *anguloCutuvelo);
+void drawGarra (struct garra *posicaoGarra, double *anguloOmbro, double *anguloCutuvelo);
