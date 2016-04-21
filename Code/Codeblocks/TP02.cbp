@@ -20,7 +20,6 @@
 					<Add library="GLU" />
 					<Add library="GLEW" />
 					<Add library="SOIL" />
-					<Add library="sfml-audio" />
 					<Add library="GL" />
 				</Linker>
 			</Target>
@@ -39,7 +38,6 @@
 					<Add library="glu32" />
 					<Add library="glew32" />
 					<Add library="SOIL" />
-					<Add library="sfml-audio" />
 					<Add library="opengl32" />
 				</Linker>
 			</Target>
@@ -48,9 +46,11 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="../bibliotecas_linux.h" />
-		<Unit filename="../bibliotecas_windows.h" />
+		<Unit filename="../garra.cpp" />
+		<Unit filename="../garra.h" />
 		<Unit filename="../main.cpp" />
+		<Unit filename="../skybox.cpp" />
+		<Unit filename="../skybox.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
