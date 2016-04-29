@@ -1,7 +1,7 @@
 CC = g++
 OPCOES_COMPILADOR= -lglut -lGLU -lGLEW -lSOIL -lGL
-TODOS_ARQUIVOS_PONTOH = skybox.h garra.h
-TODOS_ARQUIVOS_OBJ = main.o skybox.o garra.o
+TODOS_ARQUIVOS_PONTOH = skybox.h garra.h objects.h menu.h globals.h
+TODOS_ARQUIVOS_OBJ = main.o skybox.o garra.o objects.o menu.o
 
 %.o: ../%.c $(TODOS_ARQUIVOS_PONTOH)
 	$(CC) -o $@ -c $< $(OPCOES_COMPILADOR)

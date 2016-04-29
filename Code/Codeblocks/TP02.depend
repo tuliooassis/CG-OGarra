@@ -48,3 +48,41 @@
 	<iostream>
 	<SFML/Audio.hpp>
 
+1461335386 source:/home/tulio/cg-ogarra/Code/garra.cpp
+	<SOIL/SOIL.h>
+	<SOIL.h>
+	<GL/glew.h>
+	<GL/freeglut.h>
+	<iostream>
+	"garra.h"
+
+1461329885 /home/tulio/cg-ogarra/Code/garra.h
+
+1461335939 source:/home/tulio/cg-ogarra/Code/main.cpp
+	<SOIL/SOIL.h>
+	<SOIL.h>
+	<GL/glew.h>
+	<GL/freeglut.h>
+	<math.h>
+	<iostream>
+	<stdio.h>
+	<time.h>
+	<stdlib.h>
+	"skybox.h"
+	"garra.h"
+	"objects.h"
+
+1461328676 /home/tulio/cg-ogarra/Code/skybox.h
+
+1461334412 /home/tulio/cg-ogarra/Code/objects.h
+
+1461333362 source:/home/tulio/cg-ogarra/Code/skybox.cpp
+	<SOIL/SOIL.h>
+	<SOIL.h>
+	<GL/glew.h>
+	<GL/freeglut.h>
+	<math.h>
+	<iostream>
+	<stdio.h>
+	"skybox.h"
+

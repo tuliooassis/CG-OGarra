@@ -9,35 +9,68 @@
 
 #include <math.h>
 #include <iostream>
-using namespace std;
+#include <stdio.h>
 
 #include "skybox.h"
 
-void drawSkyboxMachine (struct posicao *posicao){
+using namespace std;
+
+void initSkybox (struct texturas *texturaSkyboxWorld){
+    (*texturaSkyboxWorld).top = SOIL_load_OGL_texture(
+        "./img/ceil.jpeg",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_INVERT_Y
+	);
+    if ((*texturaSkyboxWorld).top == 0 ) {
+        printf("Erro carregando textura: '%s'\n", SOIL_last_result());
+    }
+    (*texturaSkyboxWorld).down = SOIL_load_OGL_texture(
+        "./img/floor.png",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_INVERT_Y
+    );
+    if ((*texturaSkyboxWorld).down == 0 ) {
+        printf("Erro carregando textura: '%s'\n", SOIL_last_result());
+    }
+    (*texturaSkyboxWorld).side = SOIL_load_OGL_texture(
+        "./img/arcade.jpg",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_INVERT_Y
+    );
+    if ((*texturaSkyboxWorld).side == 0 ) {
+        printf("Erro carregando textura: '%s'\n", SOIL_last_result());
+    }
+}
+
+void initFog (float colorFog[]){
+    glClearColor(colorFog[0], colorFog[1], colorFog[2], 1.0f);
+    glFogi(GL_FOG_MODE, GL_EXP);        // Linear, exp. ou exp²
+    glFogfv(GL_FOG_COLOR, colorFog);    // Cor
+    glFogf(GL_FOG_DENSITY, .008f);     // Densidade
+    glHint(GL_FOG_HINT, GL_DONT_CARE);  // Não aplicar se não puder
+    glFogf(GL_FOG_START, 10.f);        // Fog Start Depth
+    glFogf(GL_FOG_END, 20.f);         // Fog End Depth
+    glEnable(GL_FOG);                   // Liga GL_FOG
+}
+
+
+void drawMachine (struct posicao *posicao){
 
     glPushMatrix();
 
         glColor4f(1.0, 1.0, 1.0, 1.0);
         glBegin(GL_QUADS);			// Face posterior
-    		glNormal3f(0.0, 0.0, 1.0);	// Normal da face
     		glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFundo);
     		glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFundo);
     		glVertex3f((*posicao).xInicio, (*posicao).yBaixo, (*posicao).zFundo);
     		glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFundo);
     	glEnd();
 
-        // glColor4f(1.0, 1.0, 1.0, 0.2); // Espelho ***** dando errim
-    	// glBegin(GL_QUADS);			// Face frontal
-    	// 	glNormal3f(0.0, 0.0, -1.0); 	// Normal da face
-    	// 	glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFrente);
-    	// 	glVertex3f((*posicao).xInicio, (*posicao).yBaixo, (*posicao).zFrente);
-    	// 	glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFrente);
-    	// 	glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFrente);
-    	// glEnd();
-
         glColor4f(1.0, 0.0, 0.0, 1.0);
     	glBegin(GL_QUADS);			// Face lateral esquerda
-    		glNormal3f(-1.0, 0.0, 0.0); 	// Normal da face
     		glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFundo);
     		glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFrente);
     		glVertex3f((*posicao).xInicio, (*posicao).yBaixo, (*posicao).zFrente);
@@ -46,7 +79,6 @@ void drawSkyboxMachine (struct posicao *posicao){
 
         glColor4f(0.0, 1.0, 0.0, 1.0);
     	glBegin(GL_QUADS);			// Face lateral direita
-    		glNormal3f(1.0, 0.0, 0.0);	// Normal da face
     		glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFundo);
     		glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFundo);
     		glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFrente);
@@ -55,7 +87,6 @@ void drawSkyboxMachine (struct posicao *posicao){
 
         glColor4f(0.0, 0.0, 1.0, 1.0);
     	glBegin(GL_QUADS);			// Face superior
-    		glNormal3f(0.0, 1.0, 0.0);  	// Normal da face
     		glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFrente);
     		glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFundo);
     		glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFundo);
@@ -64,24 +95,30 @@ void drawSkyboxMachine (struct posicao *posicao){
 
         glColor4f(0.0, 0.0, 0.0, 1.0);
     	glBegin(GL_QUADS);			// Face inferior
-    		glNormal3f(0.0, -1.0, 0.0); 	// Normal da face
     		glVertex3f((*posicao).xInicio, (*posicao).yBaixo, (*posicao).zFrente);
     		glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFrente);
     		glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFundo);
     		glVertex3f((*posicao).xInicio, (*posicao).yBaixo, (*posicao).zFundo);
     	glEnd();
+
+        glColor4f(1.0, 1.0, 1.0, 0.1); // Espelho ***** dando errim
+            glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFrente);
+            glVertex3f((*posicao).xInicio, (*posicao).yBaixo, (*posicao).zFrente);
+            glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFrente);
+            glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFrente);
+        glEnd();
+
     glPopMatrix();
 }
 
 
-void drawSkyboxWorld (struct posicao *posicao, GLint texturaSkyboxWorld[]){ // Colocar texturas do mundo
+void drawSkyboxWorld (struct posicao *posicao, struct texturas *texturaSkyboxWorld){ // Colocar texturas do mundo
     glPushMatrix();
         glEnable(GL_TEXTURE_2D);
 
         glColor4f(1.0, 1.0, 1.0, 1.0);
-        glBindTexture(GL_TEXTURE_2D, texturaSkyboxWorld[2]);
+        glBindTexture(GL_TEXTURE_2D, (*texturaSkyboxWorld).side);
         glBegin(GL_QUADS);			// Face posterior
-    		glNormal3f(0.0, 0.0, 1.0);	// Normal da face
     		glTexCoord2f(0, 1); glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFundo);
     		glTexCoord2f(1, 1); glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFundo);
     		glTexCoord2f(1, 0); glVertex3f((*posicao).xInicio, (*posicao).yBaixo, (*posicao).zFundo);
@@ -90,7 +127,6 @@ void drawSkyboxWorld (struct posicao *posicao, GLint texturaSkyboxWorld[]){ // C
 
         //
     	// glBegin(GL_QUADS);			// Face frontal
-    	// 	glNormal3f(0.0, 0.0, -1.0); 	// Normal da face
     	// 	glVertex3f(40.0, 40.0, -40.0);
     	// 	glVertex3f(40.0, -40.0, -40.0);
     	// 	glVertex3f(-40.0, -40.0, -40.0);
@@ -98,9 +134,8 @@ void drawSkyboxWorld (struct posicao *posicao, GLint texturaSkyboxWorld[]){ // C
     	// glEnd();
 
         glColor4f(1.0, 1.0, 1.0, 1.0);
-        glBindTexture(GL_TEXTURE_2D, texturaSkyboxWorld[2]);
+        glBindTexture(GL_TEXTURE_2D, (*texturaSkyboxWorld).side);
     	glBegin(GL_QUADS);			// Face lateral esquerda
-    		glNormal3f(-1.0, 0.0, 0.0); 	// Normal da face
     		glTexCoord2f(0, 1); glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFundo);
     		glTexCoord2f(1, 1); glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFrente);
     		glTexCoord2f(1, 0); glVertex3f((*posicao).xInicio, (*posicao).yBaixo, (*posicao).zFrente);
@@ -108,9 +143,8 @@ void drawSkyboxWorld (struct posicao *posicao, GLint texturaSkyboxWorld[]){ // C
     	glEnd();
 
         glColor4f(1.0, 1.0, 1.0, 1.0);
-        glBindTexture(GL_TEXTURE_2D, texturaSkyboxWorld[2]);
+        glBindTexture(GL_TEXTURE_2D, (*texturaSkyboxWorld).side);
     	glBegin(GL_QUADS);			// Face lateral direita
-    		glNormal3f(1.0, 0.0, 0.0);	// Normal da face
     		glTexCoord2f(0, 1); glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFundo);
     		glTexCoord2f(0, 0); glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFundo);
     		glTexCoord2f(1, 0); glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFrente);
@@ -118,9 +152,8 @@ void drawSkyboxWorld (struct posicao *posicao, GLint texturaSkyboxWorld[]){ // C
     	glEnd();
 
         glColor4f(0.0, 0.0, 1.0, 1.0);
-        glBindTexture(GL_TEXTURE_2D, texturaSkyboxWorld[0]);
+        glBindTexture(GL_TEXTURE_2D, (*texturaSkyboxWorld).top);
         glBegin(GL_QUADS);			// Face superior
-    		glNormal3f(0.0, 1.0, 0.0);  	// Normal da face
     		glTexCoord2f(1, 0); glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFrente);
     		glTexCoord2f(1, 1); glVertex3f((*posicao).xInicio, (*posicao).yCima, (*posicao).zFundo);
     		glTexCoord2f(0, 1); glVertex3f((*posicao).xFim, (*posicao).yCima, (*posicao).zFundo);
@@ -128,9 +161,8 @@ void drawSkyboxWorld (struct posicao *posicao, GLint texturaSkyboxWorld[]){ // C
     	glEnd();
 
         glColor4f(1.0, 1.0, 1.0, 1.0);
-        glBindTexture(GL_TEXTURE_2D, texturaSkyboxWorld[1]);
+        glBindTexture(GL_TEXTURE_2D, (*texturaSkyboxWorld).down);
     	glBegin(GL_QUADS);			// Face inferior
-    		glNormal3f(0.0, -1.0, 0.0); 	// Normal da face
     		glTexCoord2f(1, 0); glVertex3f((*posicao).xInicio, (*posicao).yBaixo, (*posicao).zFrente);
     		glTexCoord2f(1, 1); glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFrente);
     		glTexCoord2f(0, 1); glVertex3f((*posicao).xFim, (*posicao).yBaixo, (*posicao).zFundo);

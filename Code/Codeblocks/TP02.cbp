@@ -49,6 +49,8 @@
 		<Unit filename="../garra.cpp" />
 		<Unit filename="../garra.h" />
 		<Unit filename="../main.cpp" />
+		<Unit filename="../objects.cpp" />
+		<Unit filename="../objects.h" />
 		<Unit filename="../skybox.cpp" />
 		<Unit filename="../skybox.h" />
 		<Extensions>
