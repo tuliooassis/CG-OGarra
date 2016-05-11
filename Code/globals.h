@@ -4,9 +4,17 @@ struct coordenadas {
     float raio;
 };
 
+
 struct ponto {
-    float x, y;
+    float x, y, z;
     float porcentagemX, porcentagemY;
 };
 
-enum situationobject { vivo = 0, pego, solto, ganho };
+struct angulos {
+    float raiz;
+    float ombro;
+    float cutuvelo;
+};
+
+enum situationobject { padrao = 0, colisao, explodido, destruido };
+enum situationGarra { base = 0,abrindo, fechando, descendo, subindo, explodindoBolas, laser};

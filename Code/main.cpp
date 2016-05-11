@@ -6,7 +6,7 @@
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-// #include <SFML/Audio.hpp>
+#include <SFML/Audio.hpp>
 
 #include <math.h>
 #include <iostream>
@@ -21,12 +21,11 @@
 
 float colorFog[] = { 1.0f, 1.0f, 1.0f };
 
-//var arq objects
 
-
-#define qtdObjects 10
 
 using namespace std;
+int qtdObjects = 15;
+
 // configura alguns parâmetros do modelo de iluminação: FONTE DE LUZ
 const GLfloat light_ambient[]  = { 0.1f, 0.1f, 0.1f, 1.0f };
 const GLfloat light_diffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -39,38 +38,57 @@ const GLfloat mat_diffuse[]    = { 0.8f, 0.8f, 0.8f, 1.0f };
 const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
 const GLfloat high_shininess[] = { 50.0f };
 
+
 const GLfloat light_diffuse1[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
 const GLfloat light_ambient1[]   = { 0.3f, 0.3f, 0.3f, 1.0f };
 const GLfloat light_position1[] = { 0.0f, 3.0f, -1.0f, 0.0f };
 
 
+bool moveLeft, moveRight, moveFront, moveBack;
+
+
 struct texturas texturaSkyboxWorld;
-struct objects objects[qtdObjects];
+struct objects objects[16];
 struct posicao posicaoSkyboxMachine;
 struct posicao posicaoSkyboxWorld;
-struct garra posicaoGarra;
-struct menu menu[4];
+struct garra garra;
+struct menu menu[10];
 struct ponto mouse;
 
 double angle = -.8;
-
-float anguloRaiz=-30;
-float anguloCutuvelo=30;
-float anguloOmbro=30;
-
+float tempo = 0, tempoContador = 0;
 
 
 int situation = menuGeral;
+int objetosPegos = 0;
+bool som = true;
+bool somMovimentoAutomatico = false;
+bool auxSomMovimentoAut = false;
+bool somMovendo = false;
+bool somMovendoPlay = false;
+bool auxSomLaser = false;
+bool auxMusicaAmbiente = false;
+sf::Music musicaAmbiente, musicaDescendo, musicaMovendo, musicaLaser;
 
 void init (){
 
+    // Carrega sons
+    musicaAmbiente.openFromFile("sound/ambiente.wav");
+    musicaDescendo.openFromFile("sound/descendo.wav");
+    musicaMovendo.openFromFile("sound/movendo.wav");
+    musicaLaser.openFromFile("sound/laser.flac");
+    // musicaAmbiente
+    musicaAmbiente.play();
+    musicaAmbiente.setVolume(10);
+    musicaAmbiente.setLoop(true);
+
     //Instancia variáveis do skybox da maquina
-    posicaoSkyboxMachine.zFundo = -10.5;
+    posicaoSkyboxMachine.zFundo = -11.5;
     posicaoSkyboxMachine.zFrente = -5.5;
     posicaoSkyboxMachine.yCima = 3.0;
     posicaoSkyboxMachine.yBaixo = -4.9;
-    posicaoSkyboxMachine.xInicio = -3.5;
-    posicaoSkyboxMachine.xFim = 3.5;
+    posicaoSkyboxMachine.xInicio = -4.2;
+    posicaoSkyboxMachine.xFim = 4.2;
 
     //Instancia variáveis doskybox do mundo
     posicaoSkyboxWorld.zFundo = -20.0;
@@ -81,45 +99,61 @@ void init (){
     posicaoSkyboxWorld.xFim = 7.0;
 
     //Instancia variáveis garra
-    posicaoGarra.posicao.x = -1.5;
-    posicaoGarra.posicao.y = 2.75;
-    posicaoGarra.posicao.z = -8.5;
-    posicaoGarra.distanciaBasePerninha = 1.5;
-
-    posicaoGarra.desceGarra = false;
-    posicaoGarra.moveGarraBase = false;
-    posicaoGarra.abrindoGarra = false;
-    posicaoGarra.fechandoGarra = false;
-
-    posicaoGarra.xo = -1.5;
-    posicaoGarra.yo = 2.75;
-    posicaoGarra.zo = -8.0;
-
+    garra.posicao.x = -1.5;
+    garra.posicao.y = posicaoSkyboxMachine.yCima - .25;
+    garra.posicao.z = -8.5;
+    garra.alturaGarra = 0.9 + 0.9 * cos(45) + 0.85 * cos (45);
+    garra.xo = -1.5;
+    garra.yo = 2.75;
+    garra.zo = -8.0;
+    garra.posicaoDefault = true;
+    garra.angulo.raiz = -30;
+    garra.angulo.cutuvelo = 30;
+    garra.angulo.ombro = 30;
+    garra.situation = base;
+    garra.tamLaser = 0;
+    garra.variacaoTexturaExplosao = 0.1;
+    garra.parteAtualTextura = 0;
+    garra.somLaser = false;
+    // Luzes
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
+
     glEnable(GL_NORMALIZE);
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);
+
 
     glLightfv(GL_LIGHT0, GL_AMBIENT,  light_ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_diffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
-    glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient1);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse1);
-    glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-
-
     glMaterialfv(GL_FRONT, GL_AMBIENT,   mat_ambient);
     glMaterialfv(GL_FRONT, GL_DIFFUSE,   mat_diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR,  mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
 
+
+    glLightfv(GL_LIGHT1, GL_AMBIENT,  light_ambient1);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_diffuse1);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+
+    // Inicia itens
     initObjects(qtdObjects, objects, &posicaoSkyboxMachine);
     initSkybox(&texturaSkyboxWorld);
-    initFog(colorFog);
     initMenu(menu);
+    initFog(colorFog);
+
+    garra.texturaExplosao = SOIL_load_OGL_texture(
+        "./img/explosao.png",
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_INVERT_Y
+    );
+    if (garra.texturaExplosao == 0 ) {
+        printf("Erro carregando textura: '%s'\n", SOIL_last_result());
+    }
 }
 
 
@@ -128,207 +162,390 @@ void redimensiona (int width, int height){
     float razaoAspecto = (float) glutGet(GLUT_WINDOW_WIDTH) / (float) glutGet(GLUT_WINDOW_HEIGHT);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    switch (situation) {
-        case menuGeral:
-            glOrtho(razaoAspecto*-5, razaoAspecto*5, -5, 5, -3.0, 3.0);
-            break;
-        case game:
-            gluPerspective(50.0f, razaoAspecto, 1.0, 30.0);
-            //glFrustum(-razaoAspecto, razaoAspecto, -1.0, 1.0, 2.0, 100.0);
-            break;
-        }
+
+    gluPerspective(50.0f, razaoAspecto, 1.0, 30.0);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
-void desenha (){
-    double razaoAspecto = (float) glutGet(GLUT_WINDOW_WIDTH) / (float) glutGet(GLUT_WINDOW_HEIGHT);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+void desenha2D (){
+    // Ajuda de PedroHLopes & GustavoMarques
+    float razaoAspecto = (float) glutGet(GLUT_WINDOW_WIDTH) / (float) glutGet(GLUT_WINDOW_HEIGHT);
+    glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glMatrixMode (GL_PROJECTION);
+    glPushMatrix();
+        glLoadIdentity();
+        glOrtho(razaoAspecto * -5, razaoAspecto * 5, -5, 5, -3.0, 3.0);
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+            glLoadIdentity();
+
+            switch (situation) {
+                case menuGeral:
+                    drawMenu(menu, situation);
+                    break;
+                case game:
+                    drawBarraProgresso(qtdObjects, &objetosPegos);
+                    break;
+                default:
+                    desenhaTela(menu, situation);
+                    if (situation == carregando){
+                        if (tempo > 200){
+                            tempo = 0;
+                            tempoContador = 0;
+                            situation = game;
+                        }
+                    }
+                    break;
+            }
+            glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0, 1, 0, 0, 0, -9.0, 0, 1, 0);
+}
+
+void desenha (){
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glColor4f(1, 1, 1, 1);
     glLoadIdentity();
-    switch (situation) {
-        case menuGeral:
-            drawMenu(menu, situation);
-            break;
+    desenha2D();
 
+    switch (situation) {
         case game:
-            if (posicaoGarra.desceGarra)
-                gluLookAt(posicaoGarra.posicao.x, 10,  posicaoGarra.posicao.x, posicaoGarra.posicao.x, posicaoGarra.posicao.y, posicaoGarra.posicao.z, 0, 1, 0);
+            if (garra.situation == descendo)
+                gluLookAt(garra.posicao.x, 10,  garra.posicao.x, garra.posicao.x, garra.posicao.y, garra.posicao.z, 0, 1, 0);
             else
                 gluLookAt(5*sin(angle) + 5*cos(angle), 1, 5*cos(angle) - 5*sin(angle), 0, 0, -9.0, 0, 1, 0);
 
-            drawGarra (&posicaoGarra, anguloRaiz, anguloCutuvelo, anguloOmbro);
+            drawGarra (&garra);
             drawSkyboxWorld(&posicaoSkyboxWorld, &texturaSkyboxWorld);
             drawObjects(qtdObjects, objects);
             drawMachine(&posicaoSkyboxMachine);
-
+            if (garra.situation == laser){ // Desenha laser
+                explode (&garra, objects, &objetosPegos);
+            }
             break;
+        default:
+            break;
+    }
+    glutSwapBuffers();
+}
+
+void teclado (unsigned char key, int x, int y){
+    switch (situation){
+        case menuGeral:
+            if (key == 13){
+                if (menu[situation].positionTextureMenu == 0.0)
+                    situation = carregando;
+                else if (menu[situation].positionTextureMenu == 0.25)
+                    situation = menuConfiguracao;
+                else if (menu[situation].positionTextureMenu == 0.50)
+                    situation = menuCreditos;
+                else if (menu[situation].positionTextureMenu == 0.75)
+                    exit(0);
+            }
+            break;
+        case pause:
+            if (key == 'p' || key == 'P')
+                situation = game;
+            break;
+        case game:
+            if (key == '+'){
+                if (qtdObjects < 15)
+                    qtdObjects++;
+            }
+            if (key == '-'){
+                if (qtdObjects > 0)
+                    qtdObjects--;
+            }
+            if (key == 'd' || key == 'D'){// angulo de visao
+                if (angle < 0.5)
+                    angle += 0.05;
+            }
+            if (key == 'a' || key == 'A'){//angulo de visao
+                if (angle > -2)
+                    angle -= 0.05;
+            }
+            if (key == ' '){ //desce garra
+                if (garra.situation == base)
+                    garra.situation = abrindo;
+            }
+            if (key == 'f' || key == 'F'){ // habilita e desabilita FOG
+                if (glIsEnabled(GL_FOG))
+                    glDisable(GL_FOG);
+                else
+                    glEnable(GL_FOG);
+            }
+            if (key == 'p' || key == 'P') // pausa
+                situation = pause;
+
+            if (key == 'r' || key == 'R') // reinicia
+                situation = reiniciar;
+            if (key == 27) // sai
+                exit(0);
+            if (key == 'm'){
+                if (situation != menuGeral)
+                    situation = menuGeral;
+                else
+                    situation = game;
+            }
+        case reiniciar:
+            if (key == 27)
+                situation = game;
+            else if (key == 13){
+                initObjects(qtdObjects, objects, &posicaoSkyboxMachine);
+                qtdObjects = 15;
+                objetosPegos = 0;
+                situation = game;
+            }
+            break;
+        case menuCreditos:
+            if (key == 27)
+                situation = menuGeral;
+            break;
+        case gameover:
+            if (key == 13){
+                situation = menuGeral;
+                initObjects(qtdObjects, objects, &posicaoSkyboxMachine);
+            }
+            break;
+        case menuConfiguracao:
+            if (key == 27)
+                situation = menuGeral;
+            if (key == 's' || key == 'S'){
+                if (!som)
+                    som = true;
+                else
+                    som = false;
+            }
+            if (key == 'f' || key == 'F')
+                glutFullScreen();
 
         default:
             break;
     }
 
-
-    glutSwapBuffers();
-}
-
-void teclado (unsigned char key, int x, int y){
-    if (!posicaoGarra.desceGarra){ // se a garra n estiver descendo
-        switch (key){
-            case 'm':
-                if (situation != menuGeral)
-                    situation = menuGeral;
-                else
-                    situation = game;
-                redimensiona((int) glutGet(GLUT_WINDOW_WIDTH), (int) glutGet(GLUT_WINDOW_HEIGHT));
-                break;
-            case 27 :     // Tecla 'ESC
-                exit(0);
-                break;
-            case 'd':
-                    if (angle < 0.5)
-                        angle += 0.05;
-                //cout << angle << endl;
-                break;
-            case 'a':
-                    if (angle > -2)
-                        angle -= 0.05;
-                //cout << angle << endl;
-                break;
-            case 'O':
-                    anguloOmbro++;
-                // cout << anguloOmbro << " " << anguloCutuvelo << endl;
-                break;
-            case 'o':
-                    anguloOmbro--;
-                break;
-            case 'C':
-                    anguloCutuvelo++;
-                // cout << anguloOmbro << " " << anguloCutuvelo << endl;
-                break;
-            case 'c':
-                    anguloCutuvelo--;
-                break;
-            case ' ':
-                posicaoGarra.abrindoGarra = true;
-                break;
-            case 'f':
-                if (glIsEnabled(GL_FOG))
-                    glDisable(GL_FOG);
-                else
-                    glEnable(GL_FOG);
-                break;
-        }
-    }
     glutPostRedisplay();
 }
 
 void tecladoSpecial (int key, int x, int y){
-    if (!posicaoGarra.desceGarra && !posicaoGarra.moveGarraBase){ // se a garra n estiver descendo
-        switch (situation) {
-            case menuGeral:
+    switch (situation) {
+        case menuGeral:
+            if (key == GLUT_KEY_DOWN){
+                menu[situation].positionTextureMenu += menu[situation].incrementoTextureMenu;
+                if (menu[situation].positionTextureMenu >= 1.0)
+                    menu[situation].positionTextureMenu = 0;
+            }
+            else if (key == GLUT_KEY_UP){
+                if (menu[situation].positionTextureMenu <= 0.0)
+                    menu[situation].positionTextureMenu = 1;
+                menu[situation].positionTextureMenu -= menu[situation].incrementoTextureMenu;
+            }
+            break;
+        case game:
+            if (garra.situation == base && situation == game){
                 if (key == GLUT_KEY_UP){
-                    menu[situation].positionTextureMenu += menu[situation].incrementoTextureMenu;
-                    if (menu[situation].positionTextureMenu >= 1.0)
-                        menu[situation].positionTextureMenu = 0;
-                }
-                break;
-            case game:
-                if (key == GLUT_KEY_UP){
-                    for (int i = 0; i < 4; i++){
-                        if (posicaoGarra.posicao.z-1.5 > posicaoSkyboxMachine.zFundo)
-                        posicaoGarra.posicao.z -= 0.1;
-                    }
+                    moveFront = true;
+                    somMovendo = true;
                 }
                 else if (key == GLUT_KEY_DOWN){
-                    for (int i = 0; i < 4; i++){
-                        if (posicaoGarra.posicao.z+1.5 < posicaoSkyboxMachine.zFrente)
-                        posicaoGarra.posicao.z += 0.1;
-                    }
+                    moveBack = true;
+                    somMovendo = true;
                 }
                 else if (key == GLUT_KEY_LEFT){
-                    for (int i = 0; i < 4; i++){
-                        if (posicaoGarra.posicao.x+1.5 < posicaoSkyboxMachine.xFim)
-                            posicaoGarra.posicao.x += 0.1;
-                    }
+                    moveLeft = true;
+                    somMovendo = true;
                 }
                 else if (key == GLUT_KEY_RIGHT){
-                    for (int i = 0; i < 4; i++){
-                        if (posicaoGarra.posicao.x-1.5 > posicaoSkyboxMachine.xInicio)
-                            posicaoGarra.posicao.x -= 0.1;
-                    }
+                    moveRight = true;
+                    somMovendo = true;
                 }
-                // cout << posicaoGarra.posicao.x << " "  << posicaoGarra.posicao.y << " " << posicaoGarra.posicao.z << endl;
-
                 break;
-        }
+            }
+        default:
+            break;
     }
-    glutPostRedisplay();
 
 }
 
+void tecladoSpecialOcioso (int key, int x, int y){
+    switch (situation) {
+        case game:
+            if (key == GLUT_KEY_UP){
+                moveFront = false;
+            }
+            else if (key == GLUT_KEY_DOWN){
+                moveBack = false;
+            }
+            else if (key == GLUT_KEY_LEFT){
+                moveLeft = false;
+            }
+            else if (key == GLUT_KEY_RIGHT){
+                moveRight = false;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void movimentaGarra (){
+    // Movimenta a garra quando a tecla está pressionada (de acorco com limites da máquina)
+    switch (situation) {
+        case game:
+            if (moveFront){
+                if (garra.posicao.z - 1.5 > posicaoSkyboxMachine.zFundo)
+                garra.posicao.z -= 0.09;
+            }
+            else if (moveBack){
+                if (garra.posicao.z + 1.5 < posicaoSkyboxMachine.zFrente)
+                garra.posicao.z += 0.09;
+            }
+            else if (moveLeft){
+                if (garra.posicao.x - 1.5 > posicaoSkyboxMachine.xInicio)
+                    garra.posicao.x -= 0.09;
+            }
+            else if (moveRight){
+                if (garra.posicao.x + 1.5 < posicaoSkyboxMachine.xFim)
+                    garra.posicao.x += 0.09;
+            }
+            break;
+        default:
+            break;
+    }
+}
 
 void atualizaCena(int idx){
 
-    for (int i = 0; i < qtdObjects; i++){
-        if (objects[i].situation == pego)
-            upObjects (i, objects, &posicaoGarra);
-
-        if (objects[i].situation == solto)
-            soltaObjects (objects, qtdObjects, &posicaoSkyboxMachine);
+    movimentaGarra();
+    tentaPegarObjeto (&garra, objects, qtdObjects, &objetosPegos, &somMovimentoAutomatico);
+    if (situation == carregando){ // tempo somenta para exibir tela bonita de carregamento
+        tempo++; //Soma +1 a cada milisegundo
+        if (tempoContador >= 100){ // 100 vezes que passar por aqui terá 1 segundo decorrido
+            tempo++; // Soma +1 a cada segundo
+            tempoContador = 0;
+        }
     }
 
-    if (posicaoGarra.moveGarraBase)
-        moveGarraBase(&posicaoGarra, qtdObjects, objects);
+    if (objetosPegos == qtdObjects){
+        situation = gameover;
+        objetosPegos = 0;
+        qtdObjects = 15;
+    }
+    // Controle do som (movendo)
+    // estou tendo problemas aqui
+    if (!moveRight && !moveLeft && !moveBack && !moveFront)
+        somMovendo = false;
 
-    if (posicaoGarra.fechandoGarra)
-        fechaGarra(&posicaoGarra, &anguloRaiz, &anguloOmbro, &anguloCutuvelo);
+    if (somMovendo){
+        if (!somMovendoPlay && som){ // diferença no som
+            somMovendoPlay = true;
+            musicaMovendo.play();
+        }
+        // somMovendoPlay = true;
+    }
+    else {
+        musicaMovendo.stop();
+        somMovendoPlay = false;
+    }
+    // fim controle do som (movendo)
 
-    if (posicaoGarra.abrindoGarra)
-        abreGarra(&posicaoGarra, &anguloRaiz, &anguloOmbro, &anguloCutuvelo);
+    // Controle de som subida e descida automático
+    if (somMovimentoAutomatico){
+        if (!auxSomMovimentoAut && som){
+            musicaDescendo.play();
+            auxSomMovimentoAut = true;
+        }
+    }
+    else{
+        musicaDescendo.stop();
+        auxSomMovimentoAut = false;
+    }
+    // Fim controle de som
 
-    if (posicaoGarra.desceGarra)
-        downGarra(&posicaoGarra, objects, qtdObjects);
+    if (garra.somLaser){
+        if (!auxSomLaser && som){
+            auxSomLaser = true;
+            musicaLaser.play();
+        }
+    }
+    else {
+        musicaLaser.stop();
+        auxSomLaser = false;
+    }
 
+    if (som) {
+        if (!auxMusicaAmbiente){
+            musicaAmbiente.play();
+            auxMusicaAmbiente = true;
+        }
+
+    }
+    else{
+        musicaAmbiente.stop();
+        auxMusicaAmbiente = false;
+    }
 
 
     // Menu com mouse (valores atribuidos de acordo com limites dos botões)
+
     if (mouse.porcentagemX > 45 && mouse.porcentagemX < 65 && mouse.porcentagemY > 45 && mouse.porcentagemY < 53)
-        menu[situation].positionTextureMenu = 0.0;
+    menu[situation].positionTextureMenu = 0.0;
     if (mouse.porcentagemX > 45 && mouse.porcentagemX < 65 && mouse.porcentagemY > 59 && mouse.porcentagemY < 67)
         menu[situation].positionTextureMenu = 0.25;
     if (mouse.porcentagemX > 45 && mouse.porcentagemX < 65 && mouse.porcentagemY > 74 && mouse.porcentagemY < 81)
         menu[situation].positionTextureMenu = 0.50;
     if (mouse.porcentagemX > 45 && mouse.porcentagemX < 65 && mouse.porcentagemY > 86 && mouse.porcentagemY < 93)
         menu[situation].positionTextureMenu = 0.75;
-
     glutPostRedisplay();
-
-    glutTimerFunc(33, atualizaCena, 0);
+    glutTimerFunc(20, atualizaCena, 0);
 }
 
 void mouseControl (int x, int y){
+    // Recebe tamanho de tela
     float tamW = (float) glutGet(GLUT_WINDOW_WIDTH);
     float tamH = (float) glutGet(GLUT_WINDOW_HEIGHT);
     mouse.x = x;
     mouse.y = y;
+
+    // Calcula valor percentual na tela
     mouse.porcentagemX = 100 * mouse.x / tamW;
     mouse.porcentagemY = 100 * mouse.y / tamH;
 
-    // cout << mouse.porcentagemX << " " << mouse.porcentagemY << endl;
+    // Modifica o angulo de visão
+    if (situation == game){
+        if (x > (tamW-tamW/3)){
+            if (angle < 0.5)
+                angle += 0.05;
+        }
+        else if (x < tamW/3){
+            if (angle > -2)
+                angle -= 0.05;
+        }
+    }
+}
 
-    if (x > (tamW-tamW/3)){
-        if (angle < 0.5)
-            angle += 0.05;
+void mouseControlCliqueMenu (int button, int state, int x, int y){
+    if (situation == menuGeral && button == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
+        if (menu[situation].positionTextureMenu == 0.0)
+            situation = carregando;
+        else if (menu[situation].positionTextureMenu == 0.25)
+            situation = menuConfiguracao;
+        else if (menu[situation].positionTextureMenu == 0.50)
+            situation = menuCreditos;
+        else if (menu[situation].positionTextureMenu == 0.75)
+            exit(0);
     }
-    else if (x < tamW/3){
-        if (angle > -2)
-            angle -= 0.05;
-    }
-    // cout << angle << endl;
 }
 
 int main(int argc, char *argv[]){
+    srand(time(0));
+
     glutInit(&argc, argv);
     glutInitWindowSize(1000,700);
     glutInitWindowPosition(10,10);
@@ -340,8 +557,10 @@ int main(int argc, char *argv[]){
 
     glutKeyboardFunc(teclado);
     glutSpecialFunc(tecladoSpecial);
+    glutSpecialUpFunc(tecladoSpecialOcioso);
 
     glutPassiveMotionFunc(mouseControl);
+    glutMouseFunc(mouseControlCliqueMenu);
     glutTimerFunc(0, atualizaCena, 0);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -349,8 +568,9 @@ int main(int argc, char *argv[]){
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    glEnable( GL_BLEND );
+    glEnable(GL_BLEND);
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glutSetCursor(GLUT_CURSOR_FULL_CROSSHAIR); // Muda desenhinho do mouse
 
     init();
 

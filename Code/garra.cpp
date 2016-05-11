@@ -21,30 +21,30 @@ using namespace std;
 float esse_raio=1.0;
 
 void cor(float a,float b,float c){
-
-  glColor3f(a/255,b/255,c/255);
+    glColor3f(a/255,b/255,c/255);
 }
-
 void drawCilindro (int numero_segmentos, float raio, float altura){
 	float grau_pra_lado;
 	int i;
 	glBegin(GL_TRIANGLE_FAN);
-	for( i=0; i<numero_segmentos; i++) {
-	 grau_pra_lado= i* (2*PI)/numero_segmentos;
-	glVertex3f(raio*sin(grau_pra_lado),altura/2,raio*cos(grau_pra_lado));
-	}glEnd();
+	for( i=0; i<numero_segmentos; i++){
+        grau_pra_lado= i* (2*PI)/numero_segmentos;
+        glVertex3f(raio*sin(grau_pra_lado),altura/2,raio*cos(grau_pra_lado));
+	}
+    glEnd();
 
 	glBegin(GL_TRIANGLE_STRIP);
-	for( i=0; i<=numero_segmentos; i++) {
-	 grau_pra_lado= i* (2*PI)/numero_segmentos;
-	glVertex3f(raio*sin(grau_pra_lado),altura,raio*cos(grau_pra_lado));
-	glVertex3f(raio*sin(grau_pra_lado),0,raio*cos(grau_pra_lado));
-	}glEnd();
+	for( i=0; i<=numero_segmentos; i++){
+        grau_pra_lado= i* (2*PI)/numero_segmentos;
+        glVertex3f(raio*sin(grau_pra_lado),altura,raio*cos(grau_pra_lado));
+        glVertex3f(raio*sin(grau_pra_lado),0,raio*cos(grau_pra_lado));
+	}
+    glEnd();
 
 	glBegin(GL_TRIANGLE_FAN);
-	for( i=numero_segmentos; i>0; i--) {
-	 grau_pra_lado= i* (2*PI)/numero_segmentos;
-	glVertex3f(raio*sin(grau_pra_lado),0,raio*cos(grau_pra_lado));
+	for( i=numero_segmentos; i>0; i--){
+        grau_pra_lado= i* (2*PI)/numero_segmentos;
+        glVertex3f(raio*sin(grau_pra_lado),0,raio*cos(grau_pra_lado));
 	}
 	glEnd();
 }
@@ -97,113 +97,195 @@ void drawDisco (int numero_segmentos,float raio_maior,float altura,float raio_me
 }
 
 
-void desenha_dedo(float anguloRaiz, float anguloCutuvelo, float anguloOmbro){
-    glRotatef(anguloRaiz, 0, 0, 1); //Inicio das rotações
+void desenha_dedo(struct garra *garra){
+    glRotatef(garra->angulo.raiz, 0, 0, 1); //Inicio das rotações
     drawCilindro(100,0.1,0.9); //Desenha Raiz
-    glTranslatef ( 0.0,0.9, 0.0); //Move para a ponta da raiz
-    glRotatef ( anguloOmbro,0.0, 0.0, 1.0); // Rotaciona o ombro
+    glTranslatef (0.0,0.9, 0.0); //Move para a ponta da raiz
+    glutSolidSphere(0.12, 10, 10);
+    glRotatef (garra->angulo.ombro, 0.0, 0.0, 1.0); // Rotaciona o ombro
     drawCilindro(100,0.1,0.9); //Desenha o Ombro
     glTranslatef ( 0.0,0.9, 0.0); //Move para a ponta do ombro
-    glRotatef ( anguloCutuvelo,0, 0.0, 1.0); // Rotaciona o Cotovelo
-    drawCilindro(100,0.08,0.7);//Desenha o Cotovelo
+    glutSolidSphere(0.12, 10, 10);
+    glRotatef (garra->angulo.cutuvelo, 0, 0.0, 1.0); // Rotaciona o Cotovelo
+    drawCilindro(100,0.08,0.85);//Desenha o Cotovelo
 }
 
-void desenha_os_dedos(float anguloRaiz, float anguloCutuvelo, float anguloOmbro){
-	//glRotatef(10,0,0,1);
-//1º dedo
-        glPushMatrix();{// Desenha Dedos
-            glTranslatef(esse_raio, 0, 0); //Move o inicio para a ponta da base
-            desenha_dedo(anguloRaiz, anguloCutuvelo, anguloOmbro);
-        }glPopMatrix();//Desfaz todos os translates e rotates
-//
+void desenha_os_dedos(struct garra *garra){
+    //glRotatef(10,0,0,1);
+    //1º dedo
+    glPushMatrix();// Desenha Dedos
+        glTranslatef(esse_raio, 0, 0); //Move o inicio para a ponta da base
+        desenha_dedo(garra);
+    glPopMatrix();//Desfaz todos os translates e rotates
+    //
 
-//2º dedo
-        glPushMatrix();{ // Desenha Dedos
-            glRotatef(120, 0, 1, 0); //Inicio das rotações, para posicionar o 2 dedo
-            glTranslatef(esse_raio, 0, 0); //Move o inicio para a ponta da base
-            desenha_dedo(anguloRaiz, anguloCutuvelo, anguloOmbro);
-        }glPopMatrix();//Desfaz todos os translates e rotates
-//
+    //2º dedo
+    glPushMatrix(); // Desenha Dedos
+        glRotatef(120, 0, 1, 0); //Inicio das rotações, para posicionar o 2 dedo
+        glTranslatef(esse_raio, 0, 0); //Move o inicio para a ponta da base
+        desenha_dedo(garra);
+    glPopMatrix();//Desfaz todos os translates e rotates
+    //
 
-//3º dedo
-        glPushMatrix();{ // Desenha Dedos
-            glRotatef(-120, 0, 1, 0); //Inicio das rotações, para posicionar o 3 dedo
-            glTranslatef(esse_raio, 0, 0); //Move o inicio para a ponta da base
-            desenha_dedo(anguloRaiz, anguloCutuvelo, anguloOmbro);
-        }glPopMatrix();//Desfaz todos os translates e rotates
+    //3º dedo
+    glPushMatrix(); // Desenha Dedos
+        glRotatef(-120, 0, 1, 0); //Inicio das rotações, para posicionar o 3 dedo
+        glTranslatef(esse_raio, 0, 0); //Move o inicio para a ponta da base
+        desenha_dedo(garra);
+    glPopMatrix();//Desfaz todos os translates e rotates
 }
 
-void drawGarra(struct garra *posicaoGarra, float anguloRaiz, float anguloCutuvelo, float anguloOmbro){
+void drawGarra(struct garra *garra){
     glPushMatrix();
-    glColor4f(1.0, 0.0, 1.0, 1.0);
-    glTranslatef((*posicaoGarra).posicao.x, (*posicaoGarra).posicao.y, (*posicaoGarra).posicao.z);
-    glRotatef(180, 3.5, 0, 1);
-	drawDisco(100,esse_raio+0.2,0.4,esse_raio,0.2);
-	drawCilindro(100,esse_raio,0.1);
-	glTranslatef(0,0.1,0);
-	desenha_os_dedos(anguloRaiz, anguloCutuvelo, anguloOmbro);
+        glColor4f(1.0, 0.0, 1.0, 1.0);
+        glTranslatef(garra->posicao.x, garra->posicao.y, garra->posicao.z);
+        glRotatef(180, 3.5, 0, 1);
+
+        drawDisco(100,esse_raio+0.2,0.4,esse_raio,0.2);
+    	drawCilindro(100,esse_raio,0.1);
+
+        glTranslatef(0,0.1,0);
+    	desenha_os_dedos(garra);
     glPopMatrix();
 
 }
 
-void moveGarraBase (struct garra *posicaoGarra, int qtdObjects, struct objects objects[]){
-    if ((*posicaoGarra).posicao.y < (*posicaoGarra).yo)
-        (*posicaoGarra).posicao.y += 0.1;
+int posSituacao = 0;
 
-    if ((*posicaoGarra).posicao.y >= (*posicaoGarra).yo && (*posicaoGarra).posicao.x > (*posicaoGarra).xo)
-        (*posicaoGarra).posicao.x -= 0.1;
+void abreGarra (struct garra *garra){
+    garra->angulo.ombro -= 2;
+    garra->angulo.cutuvelo -= 2;
+    if (garra->angulo.ombro < 10.0 && garra->angulo.cutuvelo < 10.0){
+        garra->situation = descendo;
+    }
+}
 
-    if ((*posicaoGarra).posicao.y >= (*posicaoGarra).yo && (*posicaoGarra).posicao.x <= (*posicaoGarra).xo && (*posicaoGarra).posicao.z >= (*posicaoGarra).zo)
-        (*posicaoGarra).posicao.z -= 0.15;
-
-    if ((*posicaoGarra).posicao.y >= (*posicaoGarra).yo && (*posicaoGarra).posicao.x <= (*posicaoGarra).xo && (*posicaoGarra).posicao.z <= (*posicaoGarra).zo){
-        (*posicaoGarra).moveGarraBase = false;
-        for (int i = 0; i < qtdObjects; i++){
-        int temporaria = verifyCollision (qtdObjects, objects, posicaoGarra);
-        if (temporaria != -1)
-            objects[temporaria].situation = solto;
+void fechaGarra (struct garra *garra){
+    if (posSituacao == descendo){
+        garra->angulo.ombro += 2;
+        garra->angulo.cutuvelo += 2;
+        if (garra->angulo.ombro > 45.0 && garra->angulo.cutuvelo > 45.0){
+            garra->situation = descendo;
+        }
+    }
+    else if (posSituacao == subindo){
+        garra->angulo.ombro += 2;
+        garra->angulo.cutuvelo += 2;
+        if (garra->angulo.ombro > 45.0 && garra->angulo.cutuvelo > 45.0){
+            garra->situation = subindo;
+            // garra->situation = laser;
         }
     }
 }
 
-void abreGarra (struct garra *posicaoGarra, float *anguloRaiz, float *anguloOmbro, float *anguloCutuvelo){
-    *anguloOmbro -= 2;
-    *anguloCutuvelo -= 2;
-    if (*anguloOmbro < 10.0 && *anguloCutuvelo < 10.0){
-        (*posicaoGarra).abrindoGarra = false;
-        (*posicaoGarra).desceGarra = true;
+void desceGarra (struct garra *garra, struct objects objects[], int qtdObects, bool *somMovimentoAutomatico){
+    *somMovimentoAutomatico = true;
+    garra->posicao.y -= 0.1;
+    if (verifyCollision(qtdObects, objects, garra) != -1 || garra->posicao.y - garra->alturaGarra <= -4){
+        garra->situation = fechando;
+        posSituacao = subindo;
+        *somMovimentoAutomatico = false;
     }
 }
 
-void fechaGarra (struct garra *posicaoGarra, float *anguloRaiz, float *anguloOmbro, float *anguloCutuvelo){
-    *anguloOmbro += 2;
-    *anguloCutuvelo += 2;
-    if (*anguloOmbro > 45.0 && *anguloCutuvelo > 45.0){
-        (*posicaoGarra).fechandoGarra = false;
-        (*posicaoGarra).moveGarraBase = true;
+void sobeGarra (struct garra *garra, bool *somMovimentoAutomatico){
+    *somMovimentoAutomatico = true;
+    garra->posicao.y += 0.1;
+    if (garra->posicao.y >= garra->yo){
+        garra->situation = laser;
+        *somMovimentoAutomatico = false;
     }
 }
 
-void downGarra (struct garra *posicaoGarra, struct objects objects[], int qtdObjects){
+int objetoEmCollision;
+
+void explode (struct garra *garra, struct objects objects[], int *objetosPegos){
+    if (garra->tamLaser < garra->alturaGarra){
+        garra->somLaser = true;
+        garra->tamLaser += 0.1;
+        if (garra->tamLaser >= garra->alturaGarra){
+                if (objects[objetoEmCollision].colisionStatus == true){
+                    *objetosPegos += 1;
+                    objects[objetoEmCollision].situation = explodido;
+                    objects[objetoEmCollision].colisionStatus = false;
+
+                }
+                garra->situation = base;
+                garra->tamLaser = 0;
+                garra->somLaser = false;
+        }
+    }
+
+    glPushMatrix();
+        glTranslatef(garra->posicao.x, garra->posicao.y - garra->tamLaser, garra->posicao.z);
+
+        glColor4f(.88, 1.0, .88, 1.0); // desenha parte de dentro
+        drawCilindro(100, 0.05, garra->tamLaser);
+
+        glColor4f(0.2, 1.0, 0.0, 0.7); // desenha parte de fora
+        drawCilindro(100, 0.1, garra->tamLaser);
+
+    glPopMatrix();
+}
+
+void objetoPego (int qtdObjects, struct objects objects[], struct garra *garra){
     for (int i = 0; i < qtdObjects; i++){
-        if (verifyCollision (qtdObjects, objects, posicaoGarra) != -1 || (*posicaoGarra).posicao.y - (*posicaoGarra).distanciaBasePerninha < objects[i].y + objects[i].raio){
-            (*posicaoGarra).desceGarra = false;
-            (*posicaoGarra).fechandoGarra = true;
+        if (objects[i].colisionStatus == true){
+            objects[i].x = garra->posicao.x;
+            objects[i].z = garra->posicao.z;
+            objects[i].y = garra->posicao.y - garra->alturaGarra - objects[i].raio;
         }
+
     }
-    (*posicaoGarra).posicao.y -= 0.10;
 }
 
-int verifyCollision (int qtdObjects, struct objects objects[], struct garra *posicaoGarra){
+void tentaPegarObjeto (struct garra *garra, struct objects objects[], int qtdObjects, int *objetosPegos, bool *somMovimentoAutomatico){
+    objetoPego(qtdObjects, objects, garra); // Se o objeto for pego, faz ele "seguir" a garra
+    switch (garra->situation) {
+        case abrindo:
+            abreGarra(garra);
+            break;
+        case fechando:
+            fechaGarra(garra);
+            break;
+        case descendo:
+            desceGarra(garra, objects, qtdObjects, somMovimentoAutomatico);
+            break;
+        case subindo:
+            sobeGarra(garra, somMovimentoAutomatico);
+            break;
+        case laser:
+            explode(garra, objects, objetosPegos);
+            break;
+        default:
+            break;
+    }
+
+}
+
+int verifyCollision (int qtdObjects, struct objects objects[], struct garra *garra){
     double distancia;
     for (int i = 0; i < qtdObjects; i++){
-        distancia = sqrt(pow((*posicaoGarra).posicao.x - objects[i].x, 2) +
-            pow((*posicaoGarra).posicao.y - (*posicaoGarra).distanciaBasePerninha - 0.5 - objects[i].y, 2) +
-            pow((*posicaoGarra).posicao.z - objects[i].z, 2));
+        distancia = sqrt(pow(garra->posicao.x - objects[i].x, 2) +
+            pow((garra->posicao.y - garra->alturaGarra) - objects[i].y, 2) +
+            pow(garra->posicao.z - objects[i].z, 2));
+            // cout << distancia << endl;
 
-        if ((*posicaoGarra).distanciaBasePerninha > distancia + objects[i].raio) {
-            objects[i].situation = pego;
+        if (objects[i].situation == padrao && distancia <= objects[i].raio){ //esse_raio - objects[i].raio
+            if (objects[i].x > garra->posicao.x)
+                objects[i].x -= 0.01;
+            else
+                objects[i].x -= 0.01;
+
+            if (objects[i].z > garra->posicao.z)
+                objects[i].z -= 0.01;
+            else
+                objects[i].z -= 0.01;
+            objetoEmCollision = i;
+            objects[i].situation = colisao;
+            objects[i].colisionStatus = true;
             return i;
+
         }
     }
     return -1;
