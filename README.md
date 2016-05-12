@@ -2,7 +2,8 @@
 #### O Garra
 
  Desenvolvido por: **Túlio Assis** && **Arthur Abellice** :+1:
- ## Itens Necessários
+ 
+## Itens Necessários
  - Freeglut **sudo apt-get install freeglut3-dev**
  - Glew **sudo apt-get install libglew1.6-dev**
  - Soil **sudo apt-get install libsoil-dev**
@@ -25,6 +26,16 @@
 - Mova a guarra com as setas  ← → ↑ ↑
 - ESC sai do jogo
 - R reinicia
+
+
+## Screenshot
+> Segue mais na pasta [Screenshot](./Screenshot).
+
+![alt tag](./Screenshot/menu.png)
+![alt tag](./Screenshot/carregando.png)
+![alt tag](./Screenshot/lasergarra.png)
+![alt tag](./Screenshot/pegandoobj.png)
+
 
 ## Itens Implementados
 ### Requisitos obrigatórios
