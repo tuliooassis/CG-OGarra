@@ -23,7 +23,7 @@
 > - make clean: limpar os arquivos criados
 
 ## The Game
-- Mova a guarra com as setas  ← → ↑ ↑
+- Mova a garra com as setas  ← → ↑ ↑
 - ESC sai do jogo
 - R reinicia
 
