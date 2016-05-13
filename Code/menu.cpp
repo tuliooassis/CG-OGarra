@@ -28,12 +28,11 @@ void drawMenu (struct menu menu[], int sit){
     glPopMatrix();
 }
 
-void desenhaTela(struct menu menu[], int sit){
+void desenhaTela(struct menu menu[], int sit){ // desenha tela de acordo com a situação
     glClearColor(0,0,0,1);
-
-    glColor4f(1, 1, 1, 1);  // função que desenha cenários que não tenham sprite.
+    glColor4f(1, 1, 1, 1);
     glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, menu[sit].textureMenu); //e.g. Textura.Pause
+    glBindTexture(GL_TEXTURE_2D, menu[sit].textureMenu); //e.g. menu[pause].textureMenu
     glEnable(GL_TEXTURE_2D);
     glTranslatef(-5, -5, 1);
     glBegin(GL_POLYGON);

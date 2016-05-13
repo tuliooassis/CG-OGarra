@@ -173,7 +173,6 @@ void fechaGarra (struct garra *garra){
         garra->angulo.cutuvelo += 2;
         if (garra->angulo.ombro > 45.0 && garra->angulo.cutuvelo > 45.0){
             garra->situation = subindo;
-            // garra->situation = laser;
         }
     }
 }
@@ -200,7 +199,7 @@ void sobeGarra (struct garra *garra, bool *somMovimentoAutomatico){
 int objetoEmCollision;
 
 void explode (struct garra *garra, struct objects objects[], int *objetosPegos){
-    if (garra->tamLaser < garra->alturaGarra){
+    if (garra->tamLaser < garra->alturaGarra){ // desenha laser
         garra->somLaser = true;
         garra->tamLaser += 0.1;
         if (garra->tamLaser >= garra->alturaGarra){
@@ -229,7 +228,7 @@ void explode (struct garra *garra, struct objects objects[], int *objetosPegos){
 }
 
 void objetoPego (int qtdObjects, struct objects objects[], struct garra *garra){
-    for (int i = 0; i < qtdObjects; i++){
+    for (int i = 0; i < qtdObjects; i++){// Se o objeto for pego, faz ele "seguir" a garra
         if (objects[i].colisionStatus == true){
             objects[i].x = garra->posicao.x;
             objects[i].z = garra->posicao.z;
@@ -241,7 +240,7 @@ void objetoPego (int qtdObjects, struct objects objects[], struct garra *garra){
 
 void tentaPegarObjeto (struct garra *garra, struct objects objects[], int qtdObjects, int *objetosPegos, bool *somMovimentoAutomatico){
     objetoPego(qtdObjects, objects, garra); // Se o objeto for pego, faz ele "seguir" a garra
-    switch (garra->situation) {
+    switch (garra->situation) { // faz a garra realizar certas ações dependendo do seu estado;
         case abrindo:
             abreGarra(garra);
             break;
@@ -269,24 +268,13 @@ int verifyCollision (int qtdObjects, struct objects objects[], struct garra *gar
         distancia = sqrt(pow(garra->posicao.x - objects[i].x, 2) +
             pow((garra->posicao.y - garra->alturaGarra) - objects[i].y, 2) +
             pow(garra->posicao.z - objects[i].z, 2));
-            // cout << distancia << endl;
 
-        if (objects[i].situation == padrao && distancia <= objects[i].raio){ //esse_raio - objects[i].raio
-            if (objects[i].x > garra->posicao.x)
-                objects[i].x -= 0.01;
-            else
-                objects[i].x -= 0.01;
-
-            if (objects[i].z > garra->posicao.z)
-                objects[i].z -= 0.01;
-            else
-                objects[i].z -= 0.01;
+        if (objects[i].situation == padrao && distancia <= objects[i].raio){
             objetoEmCollision = i;
             objects[i].situation = colisao;
             objects[i].colisionStatus = true;
             return i;
-
         }
     }
-    return -1;
+    return -1; // se nao colidir, retorna -1
 }

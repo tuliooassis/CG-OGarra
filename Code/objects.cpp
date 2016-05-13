@@ -19,7 +19,7 @@ using namespace std;
 
 
 bool controleBolasLocalDiferente (int num, struct objects objects[]){
-    if (num == 0)
+    if (num == 0) // Verifica se a bola está dentro da outra
         return false;
     for (int i = 0; i < num; i++){
         if (sqrt (pow(objects[num].x - objects[i].x, 2) + pow(objects[num].z - objects[i].z, 2) / 2) <= objects[num].raio)
@@ -29,21 +29,16 @@ bool controleBolasLocalDiferente (int num, struct objects objects[]){
 }
 
 void initObjects (int qtdeObjects, struct objects objects[], struct posicao *posicaoSkyboxMachine){
-    
     float distanciaBorda = 0.6;
-    for (int i = 0; i < qtdeObjects; i++){
+    for (int i = 0; i < qtdeObjects; i++){ // distribui as bolinhas aleatóriamente
         objects[i].raio = 0.5;
         do {
             do {
                 objects[i].z = -10 + rand()%20;
-
-                // objects[i].z = -10 + (rand()%200)/10.5;
             } while (objects[i].z - objects[i].raio < posicaoSkyboxMachine->zFundo+distanciaBorda || objects[i].z + objects[i].raio > posicaoSkyboxMachine->zFrente-distanciaBorda);
 
             do {
                 objects[i].x = -10 + rand()%20;
-
-                // objects[i].x = -10 +  (rand()%200)/10.5;
             } while (objects[i].x - objects[i].raio  < posicaoSkyboxMachine->xInicio+distanciaBorda || objects[i].x + objects[i].raio > posicaoSkyboxMachine->xFim-distanciaBorda);
 
         }while (controleBolasLocalDiferente(i, objects));

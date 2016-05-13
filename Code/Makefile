@@ -20,7 +20,6 @@ install:
 	sudo apt-get install libglew1.6-dev
 	sudo apt-get install libsoil-dev
 	sudo apt-get install libsfml-dev
-
 	# Bibliotecas intaladas!
 
 clean:

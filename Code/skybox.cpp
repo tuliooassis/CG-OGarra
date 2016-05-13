@@ -12,10 +12,10 @@
 #include <stdio.h>
 
 #include "skybox.h"
-
+#include "garra.h"
 using namespace std;
 
-void initSkybox (struct texturas *texturaSkyboxWorld){
+void initSkybox (struct texturas *texturaSkyboxWorld, struct posicao *posicaoSkyboxMachine, struct posicao *posicaoSkyboxWorld, struct garra *garra){
     texturaSkyboxWorld->top = SOIL_load_OGL_texture(
         "./img/ceil.jpeg",
         SOIL_LOAD_AUTO,
@@ -43,6 +43,40 @@ void initSkybox (struct texturas *texturaSkyboxWorld){
     if (texturaSkyboxWorld->side == 0 ) {
         printf("Erro carregando textura: '%s'\n", SOIL_last_result());
     }
+
+    //Instancia variáveis do skybox da maquina
+    posicaoSkyboxMachine->zFundo = -11.5;
+    posicaoSkyboxMachine->zFrente = -5.5;
+    posicaoSkyboxMachine->yCima = 3.0;
+    posicaoSkyboxMachine->yBaixo = -4.9;
+    posicaoSkyboxMachine->xInicio = -4.2;
+    posicaoSkyboxMachine->xFim = 4.2;
+
+    //Instancia variáveis doskybox do mundo
+    posicaoSkyboxWorld->zFundo = -20.0;
+    posicaoSkyboxWorld->zFrente = 0.0;
+    posicaoSkyboxWorld->yCima = 5.0;
+    posicaoSkyboxWorld->yBaixo = -5.0;
+    posicaoSkyboxWorld->xInicio = -7.0;
+    posicaoSkyboxWorld->xFim = 7.0;
+
+    //Instancia variáveis garra
+    garra->posicao.x = -1.5;
+    garra->posicao.y = posicaoSkyboxMachine->yCima - .25;
+    garra->posicao.z = -8.5;
+    garra->alturaGarra = 0.9 + 0.9 * cos(45) + 0.85 * cos (45);
+    garra->xo = -1.5;
+    garra->yo = 2.75;
+    garra->zo = -8.0;
+    garra->posicaoDefault = true;
+    garra->angulo.raiz = -30;
+    garra->angulo.cutuvelo = 30;
+    garra->angulo.ombro = 30;
+    garra->situation = base;
+    garra->tamLaser = 0;
+    garra->variacaoTexturaExplosao = 0.1;
+    garra->parteAtualTextura = 0;
+    garra->somLaser = false;
 }
 
 void initFog (float colorFog[]){ // FOG

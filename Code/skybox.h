@@ -14,7 +14,7 @@ struct texturas {
 };
 
 void initFog (float colorFog[]);
-void initSkybox (struct texturas *texturaSkyboxWorld);
+void initSkybox (struct texturas *texturaSkyboxWorld, struct posicao *posicaoSkyboxMachine, struct posicao *posicaoSkyboxWorld, struct garra *garra);
 void drawMachine (struct posicao *posicao);
 void drawSkyboxWorld (struct posicao *posicao, struct texturas *texturaSkyboxWorld);
 void drawCilindro (int numeroSegmentos, float raio, float altura);
